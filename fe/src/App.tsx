@@ -8,6 +8,7 @@ interface Location {
   totalRatings: number
   placeId: string
   location: { lat: number; lng: number } | null
+  mapsUrl: string
 }
 
 interface Message {
@@ -18,7 +19,12 @@ interface Message {
 
 function LocationCard({ location }: { location: Location }) {
   return (
-    <div className="location-card">
+    <a
+      className="location-card"
+      href={location.mapsUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       <div className="location-name">{location.name}</div>
       <div className="location-address">{location.address}</div>
       {location.rating !== null && (
@@ -26,7 +32,7 @@ function LocationCard({ location }: { location: Location }) {
           ★ {location.rating} ({location.totalRatings} ratings)
         </div>
       )}
-    </div>
+    </a>
   )
 }
 
@@ -63,7 +69,7 @@ function App() {
     setLoading(true)
 
     try {
-      const res = await fetch('/api/recommendations', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recommendations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query }),
