@@ -1,4 +1,4 @@
-const { googleMapsApiKey } = require('../config')
+const { latlngApiKey, lat, lon } = require('../config')
 
 const toolDefinition = {
   type: 'function',
@@ -20,29 +20,30 @@ const toolDefinition = {
 }
 
 async function executeFindMaps(query) {
-  const url = new URL('https://maps.googleapis.com/maps/api/place/textsearch/json')
-  url.searchParams.set('query', query)
-  url.searchParams.set('key', googleMapsApiKey)
+  const url = new URL('https://api.latlng.work/v1/places/search')
+  url.searchParams.set('q', query)
+  url.searchParams.set('lat', lat)
+  url.searchParams.set('lon', lon)
+  url.searchParams.set('limit', 5)
 
-  const response = await fetch(url.toString())
+  const response = await fetch(url.toString(), {
+    headers: { 'X-Api-Key': latlngApiKey },
+  })
 
   if (!response.ok) {
-    throw new Error(`Google Maps API error: ${response.status} ${response.statusText}`)
+    throw new Error(`LatLng API error: ${response.status} ${response.statusText}`)
   }
 
   const data = await response.json()
 
-  if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
-    throw new Error(`Google Maps API error: ${data.status} - ${data.error_message || ''}`)
-  }
-
-  return (data.results || []).map((place) => ({
+  return (data.places || []).map((place) => ({
     name: place.name,
-    address: place.formatted_address,
-    rating: place.rating || null,
-    totalRatings: place.user_ratings_total || 0,
-    placeId: place.place_id,
-    location: place.geometry?.location || null,
+    address: [place.locality, place.country].filter(Boolean).join(', '),
+    rating: null,
+    totalRatings: 0,
+    placeId: place.id,
+    location: { lat: place.lat, lng: place.lon },
+    mapsUrl: `https://www.google.com/maps?q=${place.lat},${place.lon}`,
   }))
 }
 

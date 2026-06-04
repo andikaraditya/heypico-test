@@ -20,7 +20,7 @@ Health check endpoint.
 
 ## POST /api/recommendations
 
-Get location recommendations for a given query. The server calls an LLM to generate a search query, fetches locations via Google Maps Places API, then asks the LLM to produce a final recommendation.
+Get location recommendations for a given query. The server calls an LLM to generate a search query, fetches locations via the LatLng API, then asks the LLM to produce a final recommendation.
 
 **Request body:**
 
@@ -30,10 +30,10 @@ Get location recommendations for a given query. The server calls an LLM to gener
 
 **Response `200`:**
 
-| Field          | Type   | Description                                  |
-|----------------|--------|----------------------------------------------|
-| recommendation | string | LLM-generated recommendation text            |
-| locations      | array  | List of locations from Google Maps Places API |
+| Field          | Type   | Description                              |
+|----------------|--------|------------------------------------------|
+| recommendation | string | LLM-generated recommendation text        |
+| locations      | array  | List of locations from the LatLng API    |
 
 Each location object:
 
@@ -101,4 +101,6 @@ Each location object:
 | `LLM_BASE_URL`      | OpenAI-compatible base URL      |
 | `LLM_API_KEY`       | API key for the LLM             |
 | `LLM_MODEL`         | Model name (e.g. `gpt-4o-mini`) |
-| `GOOGLE_MAPS_API_KEY` | Google Maps Places API key    |
+| `LATLNG_API_KEY`      | API key for the LatLng API    |
+| `LAT`                 | Default latitude (default: `-6.200000`) |
+| `LON`                 | Default longitude (default: `106.816666`) |
